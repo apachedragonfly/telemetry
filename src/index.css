@@ -21,6 +21,16 @@
   }
 }
 
+/* Specific animation for vital signs value pulsing effect */
+@keyframes value-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+  }
+}
+
 /* Monitor theme colors */
 :root {
   --color-hr: #00ff00;     /* Green for heart rate */
@@ -34,22 +44,40 @@
 @layer components {
   .monitor-screen {
     @apply bg-black text-white font-mono;
+    background-image: radial-gradient(circle at center, #111 0%, #000 100%);
   }
   
   .vital-hr {
     @apply text-green-500;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
   }
   
   .vital-spo2 {
     @apply text-yellow-500;
+    text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
   }
   
   .vital-rr {
     @apply text-blue-500;
+    text-shadow: 0 0 8px rgba(0, 160, 255, 0.4);
   }
   
   .vital-bp {
     @apply text-red-500;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+  }
+  
+  .monitor-value {
+    @apply font-mono font-bold tracking-wider;
+    animation: value-glow 2s ease-in-out infinite;
+  }
+  
+  .waveform-container {
+    @apply bg-black rounded-md border border-gray-800;
+    background-image: 
+      linear-gradient(rgba(51, 51, 51, 0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(51, 51, 51, 0.5) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
 }
 

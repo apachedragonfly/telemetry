@@ -127,7 +127,7 @@ export default function RespWaveform() {
     <div ref={containerRef} className="w-full">
       <canvas 
         ref={canvasRef} 
-        className="border border-gray-700 rounded-md w-full"
+        className="border border-gray-700 rounded-md w-full waveform-container"
         style={{ height: `${dimensions.height}px` }}
       />
     </div>

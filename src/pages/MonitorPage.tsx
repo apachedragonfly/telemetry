@@ -4,6 +4,7 @@ import ECGWaveform from '../components/ECGWaveform';
 import RespWaveform from '../components/RespWaveform';
 import SpO2Waveform from '../components/SpO2Waveform';
 import TimeDisplay from '../components/TimeDisplay';
+import NIBPReviewTable from '../components/NIBPReviewTable';
 import { useVitalsSimulator } from '../hooks/useVitalsSimulator';
 import { useMonitor } from '../context/MonitorContext';
 import { alertSoundService } from '../services/alertSoundService';
@@ -92,36 +93,36 @@ export default function MonitorPage() {
           )}
           
           {/* Waveforms - Scale width to screen size */}
-          <div className="w-full max-w-3xl mx-auto space-y-2 mb-4 sm:mb-6">
+          <div className="w-full max-w-3xl mx-auto mb-4 sm:mb-6">
             {/* ECG - Green */}
-            <div>
+            <div className="mb-1 pb-1 border-b border-gray-800">
               <div className="flex justify-between items-center">
                 <div className="vital-hr text-xs sm:text-sm font-bold mb-1">ECG {vitals.rhythm}</div>
                 <div className="vital-hr text-xs">{vitals.hr} BPM</div>
               </div>
-              <div className="w-full">
+              <div className="w-full p-1 bg-black/50">
                 <ECGWaveform />
               </div>
             </div>
             
             {/* Respiratory - Blue */}
-            <div>
+            <div className="mt-3 mb-1 pb-1 border-b border-gray-800">
               <div className="flex justify-between items-center">
                 <div className="vital-rr text-xs sm:text-sm font-bold mb-1">RESP</div>
                 <div className="vital-rr text-xs">{vitals.rr} /min</div>
               </div>
-              <div className="w-full">
+              <div className="w-full p-1 bg-black/50">
                 <RespWaveform />
               </div>
             </div>
             
             {/* SpO2 - Yellow */}
-            <div>
+            <div className="mt-3">
               <div className="flex justify-between items-center">
                 <div className="vital-spo2 text-xs sm:text-sm font-bold mb-1">SpO₂</div>
                 <div className="vital-spo2 text-xs">{vitals.spo2}%</div>
               </div>
-              <div className="w-full">
+              <div className="w-full p-1 bg-black/50">
                 <SpO2Waveform />
               </div>
             </div>
@@ -133,6 +134,11 @@ export default function MonitorPage() {
             <VitalBox type="BP" />
             <VitalBox type="SpO2" />
             <VitalBox type="RR" />
+          </div>
+          
+          {/* NIBP Review Table */}
+          <div className="w-full max-w-3xl mx-auto mb-4">
+            <NIBPReviewTable />
           </div>
           
           {/* Controls with monitor-style buttons */}

@@ -26,12 +26,12 @@ export default function AlertIndicator({ isActive, children }: AlertIndicatorPro
   // Apply the border style based on alert state
   const borderStyle = isActive 
     ? visible 
-      ? 'border-red-500 border-2 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+      ? 'border-red-500 border-2 shadow-[0_0_10px_rgba(239,68,68,0.7)]'
       : 'border-gray-700 border'
     : 'border-gray-700 border';
     
   return (
-    <div className={`rounded-md transition-colors ${borderStyle}`}>
+    <div className={`rounded-md transition-colors ${borderStyle} ${isActive ? 'bg-black' : ''}`}>
       {children}
     </div>
   );
