@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import VitalBox from '../components/VitalBox';
 import ECGWaveform from '../components/ECGWaveform';
 import RespWaveform from '../components/RespWaveform';
@@ -6,22 +6,15 @@ import SpO2Waveform from '../components/SpO2Waveform';
 import TimeDisplay from '../components/TimeDisplay';
 import NIBPReviewTable from '../components/NIBPReviewTable';
 import STHigherAlert from '../components/STHigherAlert';
+import rhythmProfiles from '../data/rhythmProfiles';
+import type { RhythmKey } from '../data/rhythmProfiles';
 import { useVitalsSimulator } from '../hooks/useVitalsSimulator';
 import { useMonitor } from '../context/MonitorContext';
 import { alertSoundService } from '../services/alertSoundService';
 import { checkVitalsAlert } from '../components/AlertIndicator';
 
-// Available cardiac rhythms
-const RHYTHMS = [
-  'NSR',        // Normal Sinus Rhythm
-  'AFIB',       // Atrial Fibrillation
-  'SVT',        // Supraventricular Tachycardia
-  'VT',         // Ventricular Tachycardia
-  'VFIB',       // Ventricular Fibrillation
-  'ASYSTOLE',   // Asystole (flatline)
-  'PACED',      // Pacemaker Rhythm
-  'AV-BLOCK'    // AV Block
-];
+// Available cardiac rhythms - imported from rhythmProfiles
+const RHYTHMS = Object.keys(rhythmProfiles) as RhythmKey[];
 
 export default function MonitorPage() {
   // Initialize the vitals simulator
@@ -29,6 +22,9 @@ export default function MonitorPage() {
   
   // Get current vitals from context
   const { vitals, updateRhythm } = useMonitor();
+  
+  // Show rhythm description tooltip
+  const [showDescription, setShowDescription] = useState(false);
   
   // Check for alert conditions and play sound if needed
   useEffect(() => {
@@ -43,7 +39,8 @@ export default function MonitorPage() {
   
   // Handle rhythm change
   const handleRhythmChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    updateRhythm(event.target.value);
+    const newRhythm = event.target.value as RhythmKey;
+    updateRhythm(newRhythm);
   };
   
   // Handle reset button click
@@ -57,23 +54,47 @@ export default function MonitorPage() {
                   vitals.rr > 24 || vitals.rr < 10 || 
                   vitals.bp.sys > 140 || vitals.bp.dia > 90 || vitals.bp.sys < 90;
   
+  // Get current rhythm description
+  const currentRhythmDescription = rhythmProfiles[vitals.rhythm as RhythmKey]?.description || '';
+  
   return (
     <div className="flex flex-col items-center min-h-screen monitor-screen p-2 sm:p-4">
       {/* Monitor casing with screen effect */}
       <div className="w-full max-w-4xl bg-gray-900 border-4 border-gray-800 rounded-lg shadow-xl overflow-hidden">
         {/* Title bar with inset effect */}
         <div className="bg-black border-b border-gray-800 px-3 py-2 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <div className="flex items-center bg-gray-900 px-2 py-1 rounded-md border border-gray-800">
-            <span className="text-gray-400 mr-2 text-sm sm:text-base">Rhythm:</span>
-            <select 
-              value={vitals.rhythm}
-              onChange={handleRhythmChange}
-              className="bg-black text-green-500 border border-gray-700 rounded px-2 py-1 font-mono text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
-            >
-              {RHYTHMS.map(rhythm => (
-                <option key={rhythm} value={rhythm}>{rhythm}</option>
-              ))}
-            </select>
+          <div className="relative">
+            <div className="flex items-center bg-gray-900 px-2 py-1 rounded-md border border-gray-800">
+              <span className="text-gray-400 mr-2 text-sm sm:text-base">Rhythm:</span>
+              <select 
+                value={vitals.rhythm}
+                onChange={handleRhythmChange}
+                className="bg-black text-green-500 border border-gray-700 rounded px-2 py-1 font-mono text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+                onMouseEnter={() => setShowDescription(true)}
+                onMouseLeave={() => setShowDescription(false)}
+              >
+                {RHYTHMS.map(rhythm => (
+                  <option key={rhythm} value={rhythm}>
+                    {rhythm}
+                  </option>
+                ))}
+              </select>
+              <button 
+                className="text-gray-400 hover:text-gray-300 ml-1 text-xs"
+                onMouseEnter={() => setShowDescription(true)}
+                onMouseLeave={() => setShowDescription(false)}
+                aria-label="Show rhythm description"
+              >
+                ?
+              </button>
+            </div>
+            
+            {/* Rhythm description tooltip */}
+            {showDescription && currentRhythmDescription && (
+              <div className="absolute top-full left-0 mt-1 bg-gray-800 border border-gray-700 rounded-md p-2 text-xs z-10 w-60">
+                <p className="text-white">{currentRhythmDescription}</p>
+              </div>
+            )}
           </div>
           <h1 className="text-xl sm:text-2xl font-mono vital-hr font-bold tracking-wider">
             TELEMETRY MONITOR

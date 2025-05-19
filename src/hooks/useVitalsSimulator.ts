@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useMonitor, initialVitals } from '../context/MonitorContext';
+import type { RhythmKey } from '../data/rhythmProfiles';
+import rhythmProfiles from '../data/rhythmProfiles';
 
 // Define normal ranges for all vital signs
 const NORMAL_RANGES = {
@@ -34,30 +36,36 @@ export function useVitalsSimulator(
   variationFactor = 0.5,
   abnormalFrequency = 0.05
 ) {
-  const { setVitals } = useMonitor();
+  const { vitals, setVitals } = useMonitor();
   
   // Use a ref for the simulation time to avoid re-renders affecting the calculation
   const simulationTimeRef = useRef(0);
   
   useEffect(() => {
-    // Generate a new value with small fluctuations
+    // Skip simulation if in manual mode
+    if (vitals.isManual) {
+      return;
+    }
+
+    // Generate a new value with small fluctuations based on the rhythm profile
     const generateValue = (
       current: number,
-      min: number,
-      max: number, 
-      baseVariation: number
+      baseValue: number,
+      variance: number
     ) => {
       // Create slight random variation
-      const randomComponent = (Math.random() - 0.5) * 2 * baseVariation * variationFactor;
+      const randomComponent = (Math.random() - 0.5) * 2 * variance;
       
       // Create a sinusoidal variation for smoother changes (with a long period)
-      const sinComponent = Math.sin(simulationTimeRef.current / 10) * baseVariation * variationFactor;
+      const sinComponent = Math.sin(simulationTimeRef.current / 10) * variance;
       
       // Combine both variations
-      let newValue = current + randomComponent + sinComponent;
+      let newValue = baseValue + randomComponent + sinComponent;
       
-      // Ensure the value stays within the allowed range
-      newValue = Math.max(min, Math.min(max, newValue));
+      // Ensure the value stays within a reasonable range of the base value
+      const minAllowed = baseValue * 0.9;
+      const maxAllowed = baseValue * 1.1;
+      newValue = Math.max(minAllowed, Math.min(maxAllowed, newValue));
       
       // Round to whole number for most vitals
       return Math.round(newValue);
@@ -68,53 +76,46 @@ export function useVitalsSimulator(
       // Update simulation time
       simulationTimeRef.current += 1;
       
-      // Randomly decide if this update should generate abnormal values
-      const isAbnormal = Math.random() < abnormalFrequency;
+      // Get the profile for the current rhythm
+      const currentProfile = rhythmProfiles[vitals.rhythm as RhythmKey];
       
-      // Update all vitals with slight variations
+      // Update all vitals with slight variations around the profile values
       setVitals(prev => {
+        // Skip if in manual mode
+        if (prev.isManual) return prev;
+        
         // Generate new heart rate
-        const hrRange = isAbnormal ? ALERT_RANGES.hr : NORMAL_RANGES.hr;
         const hr = generateValue(
           prev.hr,
-          hrRange.min,
-          hrRange.max,
-          NORMAL_RANGES.hr.baselineVariation
+          currentProfile.hr,
+          NORMAL_RANGES.hr.baselineVariation * variationFactor
         );
         
         // Generate new SpO2
-        const spo2Range = isAbnormal ? ALERT_RANGES.spo2 : NORMAL_RANGES.spo2;
         const spo2 = generateValue(
           prev.spo2,
-          spo2Range.min,
-          spo2Range.max,
-          NORMAL_RANGES.spo2.baselineVariation
+          currentProfile.spo2,
+          NORMAL_RANGES.spo2.baselineVariation * variationFactor
         );
         
         // Generate new respiration rate
-        const rrRange = isAbnormal ? ALERT_RANGES.rr : NORMAL_RANGES.rr;
         const rr = generateValue(
           prev.rr,
-          rrRange.min,
-          rrRange.max,
-          NORMAL_RANGES.rr.baselineVariation
+          currentProfile.rr,
+          NORMAL_RANGES.rr.baselineVariation * variationFactor
         );
         
         // Generate new blood pressure
-        const bpSysRange = isAbnormal ? ALERT_RANGES.bp.sys : NORMAL_RANGES.bp.sys;
         const sys = generateValue(
           prev.bp.sys,
-          bpSysRange.min,
-          bpSysRange.max,
-          NORMAL_RANGES.bp.sys.baselineVariation
+          currentProfile.bp.sys,
+          NORMAL_RANGES.bp.sys.baselineVariation * variationFactor
         );
         
-        const bpDiaRange = isAbnormal ? ALERT_RANGES.bp.dia : NORMAL_RANGES.bp.dia;
         const dia = generateValue(
           prev.bp.dia,
-          bpDiaRange.min,
-          bpDiaRange.max,
-          NORMAL_RANGES.bp.dia.baselineVariation
+          currentProfile.bp.dia,
+          NORMAL_RANGES.bp.dia.baselineVariation * variationFactor
         );
         
         return {
@@ -129,11 +130,14 @@ export function useVitalsSimulator(
     
     // Clean up on unmount
     return () => clearInterval(intervalId);
-  }, [setVitals, updateInterval, variationFactor, abnormalFrequency]);
+  }, [setVitals, updateInterval, variationFactor, abnormalFrequency, vitals.isManual, vitals.rhythm]);
   
   // Function to reset vitals to initial values
   const resetVitals = () => {
-    setVitals(initialVitals);
+    setVitals({
+      ...initialVitals,
+      isManual: false, // Make sure to reset the manual flag
+    });
   };
   
   return { resetVitals };

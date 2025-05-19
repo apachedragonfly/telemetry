@@ -38,15 +38,17 @@ export default function ECGWaveform() {
     ctx: CanvasRenderingContext2D, 
     startX: number, 
     middle: number, 
-    rhythm: string
+    rhythm: string,
+    waveType: string
   ) => {
     const cycleWidth = 200; // Width of one full ECG cycle
     
     // Starting point
     ctx.moveTo(startX, middle);
     
-    switch (rhythm) {
-      case 'NSR': // Normal Sinus Rhythm
+    // Use the waveType from context instead of just rhythm string
+    switch (waveType) {
+      case 'nsr': // Normal Sinus Rhythm
         // P wave
         ctx.lineTo(startX + 20, middle - 10);
         
@@ -67,7 +69,7 @@ export default function ECGWaveform() {
         ctx.lineTo(startX + cycleWidth, middle);
         break;
         
-      case 'AFIB': // Atrial Fibrillation - Irregular, no clear P waves
+      case 'afib': // Atrial Fibrillation - Irregular, no clear P waves
         // Irregular baseline with small oscillations (representing fibrillatory waves)
         for (let i = 0; i < 40; i += 4) {
           ctx.lineTo(startX + i, middle - Math.random() * 6);
@@ -91,7 +93,7 @@ export default function ECGWaveform() {
         }
         break;
         
-      case 'SVT': // Supraventricular Tachycardia - Fast, regular, narrow QRS
+      case 'svt': // Supraventricular Tachycardia - Fast, regular, narrow QRS
         // Rapid rhythm, so make the cycle narrower
         const svtCycleWidth = 100;
         
@@ -112,7 +114,7 @@ export default function ECGWaveform() {
         ctx.lineTo(startX + svtCycleWidth, middle);
         break;
         
-      case 'VT': // Ventricular Tachycardia - Fast, wide QRS, no visible P waves
+      case 'vt': // Ventricular Tachycardia - Fast, wide QRS, no visible P waves
         // No P wave
         
         // Wide QRS complex
@@ -125,7 +127,7 @@ export default function ECGWaveform() {
         ctx.lineTo(startX + 120, middle);
         break;
         
-      case 'VFIB': // Ventricular Fibrillation - Chaotic, irregular
+      case 'vfib': // Ventricular Fibrillation - Chaotic, irregular
         // Chaotic pattern with no regular waves
         for (let i = 0; i < cycleWidth; i += 2) {
           // Create randomized chaotic signal
@@ -134,12 +136,12 @@ export default function ECGWaveform() {
         }
         break;
         
-      case 'ASYSTOLE': // Asystole - Flat line
+      case 'flat': // Asystole - Flat line
         // Flatline
         ctx.lineTo(startX + cycleWidth, middle);
         break;
         
-      case 'PACED': // Paced rhythm
+      case 'paced': // Paced rhythm
         // Pacemaker spike
         ctx.lineTo(startX + 10, middle);
         ctx.lineTo(startX + 10, middle - 30);
@@ -157,7 +159,7 @@ export default function ECGWaveform() {
         ctx.lineTo(startX + cycleWidth, middle);
         break;
         
-      case 'AV-BLOCK': // AV Block - P waves without corresponding QRS
+      case 'avblock': // AV Block - P waves without corresponding QRS
         // P wave
         ctx.lineTo(startX + 20, middle - 10);
         ctx.lineTo(startX + 40, middle);
@@ -211,14 +213,14 @@ export default function ECGWaveform() {
 
     let xOffset = 0;
     // Adjust cycle width based on rhythm
-    const getPatternWidth = (rhythm: string): number => {
-      switch (rhythm) {
-        case 'SVT':
-        case 'VT':
+    const getPatternWidth = (waveType: string): number => {
+      switch (waveType) {
+        case 'svt':
+        case 'vt':
           return 100; // Faster rhythms have shorter cycles
-        case 'VFIB':
+        case 'vfib':
           return 50;  // Very fast, chaotic
-        case 'AV-BLOCK':
+        case 'avblock':
           return 300; // Longer due to blocked beats
         default:
           return 200; // Default cycle width
@@ -257,11 +259,11 @@ export default function ECGWaveform() {
       ctx.beginPath();
       
       const middle = canvas.height / 2;
-      const patternWidth = getPatternWidth(vitals.rhythm);
+      const patternWidth = getPatternWidth(vitals.ecgWaveType);
       
       // Draw enough cycles to fill the canvas
       for (let x = -xOffset; x < canvas.width; x += patternWidth) {
-        drawECGCycle(ctx, x, middle, vitals.rhythm);
+        drawECGCycle(ctx, x, middle, vitals.rhythm, vitals.ecgWaveType);
       }
       
       ctx.stroke();
@@ -269,11 +271,11 @@ export default function ECGWaveform() {
       // Adjust scrolling speed based on rhythm
       let scrollSpeed = 1;
       
-      if (vitals.rhythm === 'SVT' || vitals.rhythm === 'VT') {
+      if (vitals.ecgWaveType === 'svt' || vitals.ecgWaveType === 'vt') {
         scrollSpeed = 2;
-      } else if (vitals.rhythm === 'VFIB') {
+      } else if (vitals.ecgWaveType === 'vfib') {
         scrollSpeed = 3;
-      } else if (vitals.rhythm === 'ASYSTOLE') {
+      } else if (vitals.ecgWaveType === 'flat') {
         scrollSpeed = 0.5;
       }
       
@@ -293,7 +295,7 @@ export default function ECGWaveform() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [vitals.rhythm, dimensions]); // Re-run effect when rhythm or dimensions change
+  }, [vitals.rhythm, vitals.ecgWaveType, dimensions]); // Re-run effect when rhythm or dimensions change
 
   return (
     <div ref={containerRef} className="w-full">
