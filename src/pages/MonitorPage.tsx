@@ -69,9 +69,10 @@ export default function MonitorPage() {
               <select 
                 value={vitals.rhythm}
                 onChange={handleRhythmChange}
-                className="bg-black text-green-500 border border-gray-700 rounded px-2 py-1 font-mono text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+                className={`bg-black text-green-500 border border-gray-700 rounded px-2 py-1 font-mono text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-green-500 ${vitals.isManual ? 'opacity-50' : ''}`}
                 onMouseEnter={() => setShowDescription(true)}
                 onMouseLeave={() => setShowDescription(false)}
+                disabled={vitals.isManual}
               >
                 {RHYTHMS.map(rhythm => (
                   <option key={rhythm} value={rhythm}>
@@ -79,6 +80,9 @@ export default function MonitorPage() {
                   </option>
                 ))}
               </select>
+              {vitals.isManual && (
+                <span className="ml-2 text-red-500 text-xs whitespace-nowrap">(Manual Mode)</span>
+              )}
               <button 
                 className="text-gray-400 hover:text-gray-300 ml-1 text-xs"
                 onMouseEnter={() => setShowDescription(true)}
@@ -98,6 +102,7 @@ export default function MonitorPage() {
           </div>
           <h1 className="text-xl sm:text-2xl font-mono vital-hr font-bold tracking-wider">
             TELEMETRY MONITOR
+            {vitals.isManual && <span className="text-xs ml-2 text-red-500">(MANUAL)</span>}
           </h1>
           <TimeDisplay />
         </div>
@@ -122,7 +127,10 @@ export default function MonitorPage() {
             {/* ECG - Green */}
             <div className="mb-1 pb-1 border-b border-gray-800">
               <div className="flex justify-between items-center">
-                <div className="vital-hr text-xs sm:text-sm font-bold mb-1">ECG {vitals.rhythm}</div>
+                <div className="vital-hr text-xs sm:text-sm font-bold mb-1">
+                  ECG {vitals.rhythm}
+                  {vitals.isManual && <span className="text-xs text-gray-500 ml-1">(Manual)</span>}
+                </div>
                 <div className="vital-hr text-xs">{vitals.hr} BPM</div>
               </div>
               <div className="w-full p-1 bg-black/50">
@@ -133,7 +141,10 @@ export default function MonitorPage() {
             {/* Respiratory - Blue */}
             <div className="mt-3 mb-1 pb-1 border-b border-gray-800">
               <div className="flex justify-between items-center">
-                <div className="vital-rr text-xs sm:text-sm font-bold mb-1">RESP</div>
+                <div className="vital-rr text-xs sm:text-sm font-bold mb-1">
+                  RESP
+                  {vitals.isManual && <span className="text-xs text-gray-500 ml-1">(Manual)</span>}
+                </div>
                 <div className="vital-rr text-xs">{vitals.rr} /min</div>
               </div>
               <div className="w-full p-1 bg-black/50">
@@ -144,7 +155,10 @@ export default function MonitorPage() {
             {/* SpO2 - Yellow */}
             <div className="mt-3">
               <div className="flex justify-between items-center">
-                <div className="vital-spo2 text-xs sm:text-sm font-bold mb-1">SpO₂</div>
+                <div className="vital-spo2 text-xs sm:text-sm font-bold mb-1">
+                  SpO₂
+                  {vitals.isManual && <span className="text-xs text-gray-500 ml-1">(Manual)</span>}
+                </div>
                 <div className="vital-spo2 text-xs">{vitals.spo2}%</div>
               </div>
               <div className="w-full p-1 bg-black/50">
@@ -167,13 +181,27 @@ export default function MonitorPage() {
           </div>
           
           {/* Controls with monitor-style buttons */}
-          <div className="flex justify-center mt-2 sm:mt-4">
+          <div className="flex justify-center mt-2 sm:mt-4 gap-3">
             <button 
               onClick={handleReset}
               className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-md border border-gray-600 text-sm sm:text-base shadow-inner hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
               Reset Vitals
             </button>
+            
+            {vitals.isManual && (
+              <button 
+                onClick={() => updateRhythm(vitals.rhythm)}
+                className="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-md border border-gray-600 text-sm sm:text-base shadow-inner hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-gray-500"
+              >
+                <span className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Return to Rhythm
+                </span>
+              </button>
+            )}
           </div>
         </div>
         
