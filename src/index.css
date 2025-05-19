@@ -21,6 +21,15 @@
   }
 }
 
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
 /* Specific animation for vital signs value pulsing effect */
 @keyframes value-glow {
   0%, 100% {
@@ -79,6 +88,10 @@
       linear-gradient(90deg, rgba(51, 51, 51, 0.5) 1px, transparent 1px);
     background-size: 20px 20px;
   }
+  
+  .st-higher-alert {
+    animation: blink 1s ease-in-out infinite;
+  }
 }
 
 @layer utilities {
@@ -88,5 +101,9 @@
   
   .animate-pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-blink {
+    animation: blink 1s ease-in-out infinite;
   }
 }

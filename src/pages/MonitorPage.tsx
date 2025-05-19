@@ -5,6 +5,7 @@ import RespWaveform from '../components/RespWaveform';
 import SpO2Waveform from '../components/SpO2Waveform';
 import TimeDisplay from '../components/TimeDisplay';
 import NIBPReviewTable from '../components/NIBPReviewTable';
+import STHigherAlert from '../components/STHigherAlert';
 import { useVitalsSimulator } from '../hooks/useVitalsSimulator';
 import { useMonitor } from '../context/MonitorContext';
 import { alertSoundService } from '../services/alertSoundService';
@@ -84,6 +85,9 @@ export default function MonitorPage() {
         <div className="p-3 sm:p-5 bg-black bg-opacity-95 relative">
           {/* Scan line effect */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-900 to-transparent opacity-5 animate-scan"></div>
+          
+          {/* ST Higher Alert - appears at the top-left when HR > 120 */}
+          <STHigherAlert />
           
           {/* Alert indicator bar */}
           {hasAlert && (
