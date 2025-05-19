@@ -1,4 +1,3 @@
-import React from 'react';
 import { useMonitor } from '../context/MonitorContext';
 import AlertIndicator, { checkVitalsAlert } from './AlertIndicator';
 
@@ -15,7 +14,7 @@ export default function VitalBox({ type }: VitalBoxProps) {
       label: 'HR',
       value: vitals.hr.toString(),
       unit: 'bpm',
-      color: 'text-green-500',
+      color: 'vital-hr',
       bgColor: 'from-green-900/10 to-transparent',
       isAlert: vitals.hr > 120, // High heart rate alert
     },
@@ -23,7 +22,7 @@ export default function VitalBox({ type }: VitalBoxProps) {
       label: 'BP',
       value: `${vitals.bp.sys}/${vitals.bp.dia}`,
       unit: 'mmHg',
-      color: 'text-red-500',
+      color: 'vital-bp',
       bgColor: 'from-red-900/10 to-transparent',
       isAlert: vitals.bp.sys > 140 || vitals.bp.dia > 90 || vitals.bp.sys < 90, // Hypertension or hypotension
     },
@@ -31,7 +30,7 @@ export default function VitalBox({ type }: VitalBoxProps) {
       label: 'SpO₂',
       value: vitals.spo2.toString(),
       unit: '%',
-      color: 'text-yellow-500',
+      color: 'vital-spo2',
       bgColor: 'from-yellow-900/10 to-transparent',
       isAlert: vitals.spo2 < 92, // Low oxygen saturation alert
     },
@@ -39,7 +38,7 @@ export default function VitalBox({ type }: VitalBoxProps) {
       label: 'RR',
       value: vitals.rr.toString(),
       unit: 'brpm',
-      color: 'text-blue-500',
+      color: 'vital-rr',
       bgColor: 'from-blue-900/10 to-transparent',
       isAlert: vitals.rr > 24 || vitals.rr < 10, // Abnormal respiratory rate
     },

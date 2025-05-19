@@ -21,6 +21,38 @@
   }
 }
 
+/* Monitor theme colors */
+:root {
+  --color-hr: #00ff00;     /* Green for heart rate */
+  --color-spo2: #ffcc00;   /* Yellow for SpO2 */
+  --color-rr: #00a0ff;     /* Blue for respiratory rate */
+  --color-bp: #ff0000;     /* Red for blood pressure */
+  --color-background: #000000; /* Monitor background */
+  --color-grid: #333333;   /* Grid lines */
+}
+
+@layer components {
+  .monitor-screen {
+    @apply bg-black text-white font-mono;
+  }
+  
+  .vital-hr {
+    @apply text-green-500;
+  }
+  
+  .vital-spo2 {
+    @apply text-yellow-500;
+  }
+  
+  .vital-rr {
+    @apply text-blue-500;
+  }
+  
+  .vital-bp {
+    @apply text-red-500;
+  }
+}
+
 @layer utilities {
   .animate-scan {
     animation: scanline 8s linear infinite;

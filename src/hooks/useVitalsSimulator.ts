@@ -34,7 +34,7 @@ export function useVitalsSimulator(
   variationFactor = 0.5,
   abnormalFrequency = 0.05
 ) {
-  const { vitals, setVitals } = useMonitor();
+  const { setVitals } = useMonitor();
   
   // Use a ref for the simulation time to avoid re-renders affecting the calculation
   const simulationTimeRef = useRef(0);

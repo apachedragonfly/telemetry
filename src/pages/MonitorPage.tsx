@@ -56,7 +56,7 @@ export default function MonitorPage() {
                   vitals.bp.sys > 140 || vitals.bp.dia > 90 || vitals.bp.sys < 90;
   
   return (
-    <div className="flex flex-col items-center min-h-screen bg-black text-white p-2 sm:p-4 font-mono">
+    <div className="flex flex-col items-center min-h-screen monitor-screen p-2 sm:p-4">
       {/* Monitor casing with screen effect */}
       <div className="w-full max-w-4xl bg-gray-900 border-4 border-gray-800 rounded-lg shadow-xl overflow-hidden">
         {/* Title bar with inset effect */}
@@ -73,7 +73,7 @@ export default function MonitorPage() {
               ))}
             </select>
           </div>
-          <h1 className="text-xl sm:text-2xl font-mono text-green-500 font-bold tracking-wider">
+          <h1 className="text-xl sm:text-2xl font-mono vital-hr font-bold tracking-wider">
             TELEMETRY MONITOR
           </h1>
           <TimeDisplay />
@@ -96,8 +96,8 @@ export default function MonitorPage() {
             {/* ECG - Green */}
             <div>
               <div className="flex justify-between items-center">
-                <div className="text-green-500 text-xs sm:text-sm font-bold mb-1">ECG {vitals.rhythm}</div>
-                <div className="text-green-500 text-xs">{vitals.hr} BPM</div>
+                <div className="vital-hr text-xs sm:text-sm font-bold mb-1">ECG {vitals.rhythm}</div>
+                <div className="vital-hr text-xs">{vitals.hr} BPM</div>
               </div>
               <div className="w-full">
                 <ECGWaveform />
@@ -107,8 +107,8 @@ export default function MonitorPage() {
             {/* Respiratory - Blue */}
             <div>
               <div className="flex justify-between items-center">
-                <div className="text-blue-500 text-xs sm:text-sm font-bold mb-1">RESP</div>
-                <div className="text-blue-500 text-xs">{vitals.rr} /min</div>
+                <div className="vital-rr text-xs sm:text-sm font-bold mb-1">RESP</div>
+                <div className="vital-rr text-xs">{vitals.rr} /min</div>
               </div>
               <div className="w-full">
                 <RespWaveform />
@@ -118,8 +118,8 @@ export default function MonitorPage() {
             {/* SpO2 - Yellow */}
             <div>
               <div className="flex justify-between items-center">
-                <div className="text-yellow-500 text-xs sm:text-sm font-bold mb-1">SpO₂</div>
-                <div className="text-yellow-500 text-xs">{vitals.spo2}%</div>
+                <div className="vital-spo2 text-xs sm:text-sm font-bold mb-1">SpO₂</div>
+                <div className="vital-spo2 text-xs">{vitals.spo2}%</div>
               </div>
               <div className="w-full">
                 <SpO2Waveform />
